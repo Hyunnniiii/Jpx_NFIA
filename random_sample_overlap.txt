@@ -1,0 +1,28 @@
+# Directory containing the intersected BED files
+input_dir="/home/bboyamm/zzinmak/output100/"
+output_file="/home/bboyamm/zzinmak/unique_output100/results100.csv"
+
+# Initialize the output CSV file with the header
+echo "sample,count" > $output_file
+
+# Loop through the 100 random_sample intersected BED files
+for i in {1..100}
+do
+    intersect_file="${input_dir}intersected_sample_${i}.bed"
+    
+    # Check if intersect file exists
+    if [ -f "$intersect_file" ]; then
+        echo "Processing $intersect_file"
+        
+        # Extract unique peaks from the intersection (chr, start, end from the b.bed file)
+        unique_count=$(awk '{print $1, $2, $3}' "$intersect_file" | sort | uniq | wc -l)
+        
+        echo "Unique count for intersected_sample_${i}: $unique_count"
+        echo "intersected_sample_${i},$unique_count" >> $output_file
+    else
+        echo "Intersect file $intersect_file not found"
+        echo "intersected_sample_${i},0" >> $output_file
+    fi
+done
+
+echo "Row counts with unique genes saved to $output_file"
